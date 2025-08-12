@@ -5,14 +5,93 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import LoginSignupLottieFile from "@/assets/LoginSignupLottieFile.json";
 import Lottie from "lottie-react";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setUserInfo } from "@/features/user.slice";
+import {
+  useUserLoginMutation,
+  useUserSignUpMutation,
+} from "@/features/user.slice";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
+  const [userSignUp] = useUserSignUpMutation();
+  const [userLogin] = useUserLoginMutation();
+  const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const dispatch = useDispatch();
 
-  const handleLogin = async () => {};
-  const handleSignup = async () => {};
+  const validateSignup = () => {
+    if (!password.trim()) {
+      toast.error("password is required");
+      return false;
+    }
+    if (!email.trim()) {
+      toast.error("email is required");
+      return false;
+    }
+    if (!confirmPassword.trim()) {
+      toast.error("confirm password is required");
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("password and confirm password do not match");
+      return false;
+    }
+    return true;
+  };
+
+  const validateLogin = () => {
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+    return true;
+  };
+
+  const handleLogin = async () => {
+    if (validateLogin()) {
+      const result = await userLogin({ email, password });
+      console.log('user:', result.data.user);
+      if (result.data.user.userId) {
+        dispatch(setUserInfo(result.data.user));
+        console.log(
+          "profileSetup:",
+          result.data.user.profileSetup,
+          typeof result.data.user.profileSetup
+        );
+
+        if (result.data.user.profileSetup) {
+          console.log(result.data.user.profileSetup);
+          navigate("/chat");
+        } else {
+          navigate("/profile");
+        }
+      }
+    }
+  };
+  const handleSignup = async () => {
+    if (validateSignup()) {
+      const result = await userSignUp({ email, password });
+      if (result.error) {
+        toast.error(result.error.data?.message || "Signup failed");
+      } else {
+        dispatch(setUserInfo(result.data.user));
+        toast.success(result.data?.message || "Signup successful");
+        navigate("/profile");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+      }
+    }
+  };
 
   return (
     <div className="h-[100vh] w-[100vw] flex justify-center items-center ">
@@ -32,7 +111,7 @@ const Auth = () => {
             </p>
           </div>
           <div className="flex items-center justify-center  w-full ">
-            <Tabs className="w-3/4  ">
+            <Tabs className="w-3/4  " defaultValue="login">
               <TabsList className="bg-transparent rounded-none w-full flex justify-center">
                 <TabsTrigger
                   value="login"

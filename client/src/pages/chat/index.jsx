@@ -1,11 +1,17 @@
-import React from 'react'
-
+import React, { use, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 const Chat = () => {
-  return (
-    <div>
-      <h1>chat</h1>
-    </div>
-  )
-}
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user.userInfo);
 
-export default Chat
+  useEffect(() => {
+    if (!user.profileSetup) {
+      navigate("/profile");
+    }
+  }, [user, navigate]);
+
+  return <div></div>;
+};
+
+export default Chat;
