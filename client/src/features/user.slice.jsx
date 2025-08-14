@@ -1,7 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { createSlice } from "@reduxjs/toolkit";
-import { HOST, SIGNUP_ROUTE, LOGIN_ROUTE } from "@/utils/constant";
-
+import {
+  HOST,
+  SIGNUP_ROUTE,
+  LOGIN_ROUTE,
+  GET_USER_INFO,
+  UPDATE_PROFILE_ROUTE,
+} from "@/utils/constant";
 
 export const userSlice = createSlice({
   name: "user",
@@ -23,6 +28,15 @@ export const userApi = createApi({
     baseUrl: HOST,
   }),
   endpoints: (builder) => ({
+    getCurrentUserInfo: builder.query({
+      query: () => ({
+        url: GET_USER_INFO,
+        method: "GET",
+        credentials: "include",
+      }),
+      //providesTags: ["UserChange"],
+    }),
+
     // Endpoint for user signup
     userSignUp: builder.mutation({
       query: (userData) => ({
@@ -31,6 +45,7 @@ export const userApi = createApi({
         body: userData,
         credentials: "include",
       }),
+      //providesTags: ["UserChange"],
     }),
     userLogin: builder.mutation({
       query: (userData) => ({
@@ -39,10 +54,26 @@ export const userApi = createApi({
         body: userData,
         credentials: "include",
       }),
+      //providesTags: ["UserChange"],
+    }),
+
+    updateProfile: builder.mutation({
+      query: (userData) => ({
+        url: UPDATE_PROFILE_ROUTE,
+        method: "POST",
+        body: userData,
+        credentials: "include",
+      }),
+      //providesTags: ["UserChange"],
     }),
   }),
 });
 
-export const { useUserSignUpMutation , useUserLoginMutation} = userApi;
+export const {
+  useUserSignUpMutation,
+  useUserLoginMutation,
+  useGetCurrentUserInfoQuery,
+  useUpdateProfileMutation
+} = userApi;
 export const { setUserInfo } = userSlice.actions;
 export default userSlice.reducer;

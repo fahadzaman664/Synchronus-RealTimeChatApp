@@ -108,3 +108,71 @@ export const login = async (req, res, next) => {
         });
     }
 }
+
+// getuserinfo
+export const getUserInfo = async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const userData = await User.findById(userId);
+        if (!userData) {
+            return res.status(404).send("user with the given not found");
+        }
+
+        res.status(200).json({
+            user: {
+                userId: userData._id,
+                email: userData.email,
+                profileSetup: userData.profilesetup,
+                firstName: userData.firstname,
+                lastName: userData.lastname,
+                image: userData.image,
+                color: userData.color
+
+            }
+
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}
+//update profile
+export const updateProfile = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { firstName, lastName, color } = req.body;
+        console.log(firstName,lastName, color)
+        if (!firstName || !lastName || color == null) {
+            return res.status(400).send("Firstname, lastname and color is required");
+        }
+        const userData = await User.findByIdAndUpdate(userId, {
+            firstname:firstName, lastname:lastName, color, profilesetup: true
+        }, { new: true, runValidators: true });
+
+        res.status(200).json({
+            message: "profile updated successfuly",
+            success: true,
+            user: {
+                userId: userData._id,
+                email: userData.email,
+                profileSetup: userData.profilesetup,
+                firstName: userData.firstname,
+                lastName: userData.lastname,
+                image: userData.image,
+                color: userData.color
+            }
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+
+    }
+}
