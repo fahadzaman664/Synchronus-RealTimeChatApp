@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoArrowBack } from "react-icons/io5";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -8,24 +8,36 @@ import { FaTrash, FaPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useUpdateProfileMutation } from "@/features/user.slice";
+import { HOST } from "@/utils/constant";
+import {
+  useRemoveProfileImageMutation,
+  useUpdateProfileMutation,
+  useUploadProfileImageMutation,
+} from "@/features/user.slice";
 import { setUserInfo } from "@/features/user.slice";
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const user = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
   const [updateProfile] = useUpdateProfileMutation();
+  const [uploadProfileImage] = useUploadProfileImageMutation();
+  const [removeProfileImage] = useRemoveProfileImageMutation();
   const [hovered, setHovered] = useState(false);
   const [image, setImage] = useState("");
   const [selectedColour, setSelectedColour] = useState(0);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const navigate = useNavigate();
+  const fileInputRef = useRef();
 
   useEffect(() => {
     if (user.profileSetup) {
       setFirstName(user.firstName);
       setLastName(user.lastName);
       setSelectedColour(user.color);
+      if (user.image) {
+        setImage(`${HOST}/${user.image}`);
+      }
     }
   }, [user]);
 
@@ -52,6 +64,7 @@ const Profile = () => {
         if (result.data && result.data.success) {
           dispatch(setUserInfo(result.data.user));
           toast.success(result.data.message);
+          navigate("/chat");
         }
       } catch (error) {
         toast.error(error.message);
@@ -59,11 +72,65 @@ const Profile = () => {
     }
   };
 
+  const handleNavigate = () => {
+    if (user.profileSetup) {
+      navigate("/chat");
+    } else {
+      toast.success("please setup profile first");
+    }
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append("profile-image", file);
+
+    if (!user.profileSetup) {
+      toast.error("please enter firstname,lastname then submit");
+      return;
+    }
+
+    const response = await uploadProfileImage(formData);
+    if (response.data && response.data.image) {
+      dispatch(setUserInfo({ ...user, image: response.data.image }));
+      toast.success(response.data.message);
+    }
+
+    // const reader = new FileReader();
+    // reader.onload = (event) => {
+    //   setImage(event.target.result); // store base64 image in state
+    // };
+    // reader.readAsDataURL(file);
+  };
+  const handleImageDelete = async () => {
+    try {
+      const response = await removeProfileImage().unwrap();
+      console.log("response", response);
+
+      if (response.success) {
+        console.log("response", response);
+        dispatch(setUserInfo({ ...user, image: null }));
+        toast.success(response.message);
+        setImage(null);
+      }
+    } catch (error) {}
+  };
+
   return (
     <div className="bg-[#1b1c25] h-[100vh] flex items-center justify-center flex-col gap-10">
       <div className="flex flex-col gap-10 w-[80vw] md:w-max">
         <div>
-          <IoArrowBack className="text-4xl lg:text-5xl text-white/95 cursor-pointer" />
+          <IoArrowBack
+            className="text-4xl lg:text-5xl text-white/95 cursor-pointer"
+            onClick={handleNavigate}
+          />
         </div>
         <div className="grid grid-cols-2">
           <div
@@ -91,7 +158,10 @@ const Profile = () => {
               )}
             </Avatar>
             {hovered && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full">
+              <div
+                className="absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full"
+                onClick={image ? handleImageDelete : handleFileInputClick}
+              >
                 {image ? (
                   <FaTrash className="text-white text-3xl cursor-pointer" />
                 ) : (
@@ -99,7 +169,14 @@ const Profile = () => {
                 )}
               </div>
             )}
-            {/* <input type="text" className="" /> */}
+            <input
+              className="bg-accent hidden"
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              name="profile-image"
+              accept=".png, .jpg, .jpeg, .svg, .webp "
+            />
           </div>
           <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
             <div className="w-full">

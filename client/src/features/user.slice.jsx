@@ -6,6 +6,8 @@ import {
   LOGIN_ROUTE,
   GET_USER_INFO,
   UPDATE_PROFILE_ROUTE,
+  ADD_PROFILE_IMAGE_ROUTE,
+  REMOVE_PROFILE_IMAGE_ROUTE,
 } from "@/utils/constant";
 
 export const userSlice = createSlice({
@@ -66,6 +68,24 @@ export const userApi = createApi({
       }),
       //providesTags: ["UserChange"],
     }),
+
+    uploadProfileImage: builder.mutation({
+      query: (formData) => ({
+        url: ADD_PROFILE_IMAGE_ROUTE,
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }),
+      //providesTags: ["UserChange"],
+    }),
+    removeProfileImage: builder.mutation({
+      query: () => ({
+        url: REMOVE_PROFILE_IMAGE_ROUTE,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      //providesTags: ["UserChange"],
+    }),
   }),
 });
 
@@ -73,7 +93,9 @@ export const {
   useUserSignUpMutation,
   useUserLoginMutation,
   useGetCurrentUserInfoQuery,
-  useUpdateProfileMutation
+  useUpdateProfileMutation,
+  useUploadProfileImageMutation,
+  useRemoveProfileImageMutation
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export default userSlice.reducer;
