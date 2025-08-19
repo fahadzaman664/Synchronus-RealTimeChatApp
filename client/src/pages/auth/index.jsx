@@ -62,14 +62,7 @@ const Auth = () => {
       console.log('user:', result.data.user);
       if (result.data.user.userId) {
         dispatch(setUserInfo(result.data.user));
-        console.log(
-          "profileSetup:",
-          result.data.user.profileSetup,
-          typeof result.data.user.profileSetup
-        );
-
         if (result.data.user.profileSetup) {
-          console.log(result.data.user.profileSetup);
           navigate("/chat");
         } else {
           navigate("/profile");
@@ -79,7 +72,8 @@ const Auth = () => {
   };
   const handleSignup = async () => {
     if (validateSignup()) {
-      const result = await userSignUp({ email, password });
+      try {
+        const result = await userSignUp({ email, password });
       if (result.error) {
         toast.error(result.error.data?.message || "Signup failed");
       } else {
@@ -90,6 +84,11 @@ const Auth = () => {
         setPassword("");
         setConfirmPassword("");
       }
+        
+      } catch (error) {
+        toast.error(error.data.message)
+      }
+      
     }
   };
 

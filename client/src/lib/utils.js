@@ -14,6 +14,7 @@ export const colors = [
 ];
 
 export const getColour = (color) => {
+   
   if (color >= 0 && color < colors.length) {
     return colors[color];
   }

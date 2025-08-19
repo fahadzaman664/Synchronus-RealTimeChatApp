@@ -36,7 +36,7 @@ const App = () => {
         }
       } catch (err) {
         dispatch(setUserInfo(null));
-        toast.error(err?.data?.message || "Failed to fetch user");
+        // toast.error(err?.data?.message || "Failed to fetch user");
       } finally {
         setLoading(false);
       }

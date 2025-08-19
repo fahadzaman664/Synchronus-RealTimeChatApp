@@ -8,6 +8,8 @@ import {
   UPDATE_PROFILE_ROUTE,
   ADD_PROFILE_IMAGE_ROUTE,
   REMOVE_PROFILE_IMAGE_ROUTE,
+  LOGOUT_ROUTE,
+  SEARCH_CONTACTS_ROUTE,
 } from "@/utils/constant";
 
 export const userSlice = createSlice({
@@ -86,6 +88,21 @@ export const userApi = createApi({
       }),
       //providesTags: ["UserChange"],
     }),
+     logOut: builder.mutation({
+      query: () => ({
+        url: LOGOUT_ROUTE,
+        method: "POST",
+        credentials: "include",
+      }),
+    }),
+     searchContacts: builder.mutation({
+      query: (searchTerm) => ({
+        url: SEARCH_CONTACTS_ROUTE,
+        method: "POST",
+        body: searchTerm,
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -95,7 +112,9 @@ export const {
   useGetCurrentUserInfoQuery,
   useUpdateProfileMutation,
   useUploadProfileImageMutation,
-  useRemoveProfileImageMutation
+  useRemoveProfileImageMutation,
+  useLogOutMutation,
+  useSearchContactsMutation
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,3 +1,7 @@
+import { useState } from "react";
+import NewDm from "./components/new-dm";
+import ProfileInfo from "./components/profile-info/ProfileInfo";
+
 const ContactsContainer = () => {
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[20-vw] bg-[#343541]   border-r-2 border-[#2f303b] w-full">
@@ -5,15 +9,19 @@ const ContactsContainer = () => {
         <Logo />
       </div>
       <div className="my-5">
-        <div className="flex items-center between pr-10">
+        <div className="flex items-center justify-between pr-10">
           <Title text="Direct Messages" />
+          <div className="">
+            <NewDm />
+          </div>
         </div>
       </div>
-       <div className="my-5">
+      <div className="my-5">
         <div className="flex items-center justify-between pr-10">
           <Title text="Channels" />
         </div>
       </div>
+      <ProfileInfo />
     </div>
   );
 };
@@ -55,6 +63,8 @@ export const Logo = () => {
 
 const Title = ({ text }) => {
   return (
-    <h6 className="uppercase tracking-widest text-neutral-400 pl-10 font-light text-opacity-90 text-sm">{text}</h6>
+    <h6 className="uppercase tracking-widest text-neutral-400 pl-10 font-light text-opacity-90 text-sm">
+      {text}
+    </h6>
   );
 };
