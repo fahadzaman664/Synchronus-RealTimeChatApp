@@ -25,6 +25,32 @@ export const userSlice = createSlice({
   },
 });
 
+export const createChatSlice = createSlice({
+  name: "chat",
+  initialState: {
+    selectedChatType: undefined,
+    selectedChatData: undefined,
+    selectedChatMessages: [],
+  },
+
+  reducers: {
+    setSelectedChatType: (state, action) => {
+      state.selectedChatType = action.payload;
+    },
+    setSelectedChatData: (state, action) => {
+      state.selectedChatData = action.payload;
+    },
+    closeChat: (state) => {
+      state.selectedChatData = undefined;
+      state.selectedChatType = undefined;
+      state.selectedChatMessages = [];
+    },
+    setSelectedChatMessages: (state, action) => {
+      state.selectedChatMessages = action.payload;
+    },
+  },
+});
+
 // This file defines the API slice for managing student data
 // It includes endpoints for fetching and creating students, with caching and invalidation features.
 export const userApi = createApi({
@@ -88,19 +114,22 @@ export const userApi = createApi({
       }),
       //providesTags: ["UserChange"],
     }),
-     logOut: builder.mutation({
+    logOut: builder.mutation({
       query: () => ({
         url: LOGOUT_ROUTE,
         method: "POST",
         credentials: "include",
       }),
     }),
-     searchContacts: builder.mutation({
+    searchContacts: builder.mutation({
       query: (searchTerm) => ({
         url: SEARCH_CONTACTS_ROUTE,
         method: "POST",
         body: searchTerm,
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
     }),
   }),
@@ -114,7 +143,14 @@ export const {
   useUploadProfileImageMutation,
   useRemoveProfileImageMutation,
   useLogOutMutation,
-  useSearchContactsMutation
+  useSearchContactsMutation,
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
-export default userSlice.reducer;
+export const {
+  setSelectedChatData,
+  setSelectedChatType,
+  closeChat,
+  setSelectedChatMessages,
+} = createChatSlice.actions;
+export const userReducer = userSlice.reducer;
+export const chatReducer = createChatSlice.reducer;

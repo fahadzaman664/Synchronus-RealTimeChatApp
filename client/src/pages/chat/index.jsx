@@ -6,6 +6,10 @@ import ChatContainer from "@/components/chat-container";
 import ContactsContainer from "@/components/contacts-container";
 import EmptyChatContainer from "@/components/empty-chat-container";
 const Chat = () => {
+  const { selectedChatType, selectedChatMessages, selectedChatData } =
+    useSelector((state) => state.chat);
+
+    // const selectedChatType = useSelector((state)=>state.chat.selectedChatType);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.userInfo);
 
@@ -19,8 +23,11 @@ const Chat = () => {
   return (
     <div className="flex h-[100vh]  text-white  overflow-hidden ">
       <ContactsContainer />
-      {/* <EmptyChatContainer /> */}
-      <ChatContainer />
+      {selectedChatType === undefined ? (
+        <EmptyChatContainer />
+      ) : (
+        <ChatContainer />
+      )}
     </div>
   );
 };
