@@ -57,6 +57,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: HOST,
   }),
+ // tagTypes: [ 'User'],
   endpoints: (builder) => ({
     getCurrentUserInfo: builder.query({
       query: () => ({
@@ -75,7 +76,7 @@ export const userApi = createApi({
         body: userData,
         credentials: "include",
       }),
-      //providesTags: ["UserChange"],
+      providesTags: ["UserChange"],
     }),
     userLogin: builder.mutation({
       query: (userData) => ({
@@ -131,7 +132,9 @@ export const userApi = createApi({
           "Content-Type": "application/json",
         },
       }),
+     // invalidatesTags:["UserChange"]
     }),
+   
   }),
 });
 
@@ -143,7 +146,7 @@ export const {
   useUploadProfileImageMutation,
   useRemoveProfileImageMutation,
   useLogOutMutation,
-  useSearchContactsMutation,
+  useSearchContactsMutation
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {

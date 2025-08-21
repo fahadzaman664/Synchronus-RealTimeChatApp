@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import contactRoutes from './routes/contact.routes.js';
+import setUpSocket from './socket.js';
 
 dotenv.config();
 const app = express();
@@ -26,11 +27,12 @@ app.use('/api/contacts', contactRoutes);
 
 app.use('/uploads/profiles', express.static("uploads/profiles"));
 
-
-
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+setUpSocket(server);
+
 
 mongoose.connect(
     mongoUrl, {

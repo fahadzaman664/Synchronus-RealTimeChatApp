@@ -3,6 +3,7 @@ import User from "../Models/user.model.js";
 export const searchContact = async (req, res) => {
     try {
         const { searchTerm } = req.body;
+        const userId = req.userId;
         if (searchTerm === undefined || searchTerm === null) {
             return res.status(400).send("searchTerm is required")
         }
@@ -10,7 +11,7 @@ export const searchContact = async (req, res) => {
         const regex = new RegExp(sanitizeSearchTerm, "i")
         const contacts = await User.find({
             $and: [
-                { _id: { $ne: req.userId } },
+                { _id: { $ne: userId } },
                 {
                     $or: [{ firstname: regex }, { lastname: regex }, { email: regex }]
                 }
