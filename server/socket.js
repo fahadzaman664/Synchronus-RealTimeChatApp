@@ -29,8 +29,8 @@ const setUpSocket = (server) => {
         const senderSocketId = userSocketMap.get(message.sender);
         const receipentSocketId = userSocketMap.get(message.receipent);
 
-    console.log("Sender ID:", message.sender, "=> Socket:", senderSocketId);
-    console.log("Recipient ID:", message.receipent, "=> Socket:", receipentSocketId);
+        console.log("Sender ID:", message.sender, "=> Socket:", senderSocketId);
+        console.log("Recipient ID:", message.receipent, "=> Socket:", receipentSocketId);
         const createMessage = await Message.create(message);
 
         const messageData = await Message.findById(createMessage._id).populate("sender", "id email firstname lastname image color").populate("receipent", "id email firstname lastname image color");;
