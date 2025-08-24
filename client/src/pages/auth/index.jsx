@@ -59,7 +59,9 @@ const Auth = () => {
   const handleLogin = async () => {
     if (validateLogin()) {
       const result = await userLogin({ email, password });
-      console.log('user:', result.data.user);
+      if (result.error) {
+        toast.error(result.error.data?.message || "Something went wrong!");
+      }
       if (result.data.user.userId) {
         dispatch(setUserInfo(result.data.user));
         if (result.data.user.profileSetup) {
@@ -74,21 +76,19 @@ const Auth = () => {
     if (validateSignup()) {
       try {
         const result = await userSignUp({ email, password });
-      if (result.error) {
-        toast.error(result.error.data?.message || "Signup failed");
-      } else {
-        dispatch(setUserInfo(result.data.user));
-        toast.success(result.data?.message || "Signup successful");
-        navigate("/profile");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-      }
-        
+        if (result.error) {
+          toast.error(result.error.data?.message || "Signup failed");
+        } else {
+          dispatch(setUserInfo(result.data.user));
+          toast.success(result.data?.message || "Signup successful");
+          navigate("/profile");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+        }
       } catch (error) {
-        toast.error(error.data.message)
+        toast.error(error.data.message);
       }
-      
     }
   };
 

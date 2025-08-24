@@ -31,6 +31,7 @@ export const createChatSlice = createSlice({
     selectedChatType: undefined,
     selectedChatData: undefined,
     selectedChatMessages: [],
+    
   },
 
   reducers: {
@@ -48,6 +49,20 @@ export const createChatSlice = createSlice({
     setSelectedChatMessages: (state, action) => {
       state.selectedChatMessages = action.payload;
     },
+    setAddMessage: (state, action) => {
+      const chatMessages = state.selectedChatMessages;
+      const chatType = state.selectedChatType;
+      const message = action.payload;
+      state.selectedChatMessages = [
+        ...chatMessages,
+        {
+          ...message,
+          receipent:
+            chatType === "channel" ? message.receipent : message.receipent._id,
+          sender: chatType === "channel" ? message.sender : message.sender._id,
+        },
+      ];
+    },
   },
 });
 
@@ -57,7 +72,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: HOST,
   }),
- // tagTypes: [ 'User'],
+  // tagTypes: [ 'User'],
   endpoints: (builder) => ({
     getCurrentUserInfo: builder.query({
       query: () => ({
@@ -132,9 +147,8 @@ export const userApi = createApi({
           "Content-Type": "application/json",
         },
       }),
-     // invalidatesTags:["UserChange"]
+      // invalidatesTags:["UserChange"]
     }),
-   
   }),
 });
 
@@ -146,7 +160,7 @@ export const {
   useUploadProfileImageMutation,
   useRemoveProfileImageMutation,
   useLogOutMutation,
-  useSearchContactsMutation
+  useSearchContactsMutation,
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {
@@ -154,6 +168,7 @@ export const {
   setSelectedChatType,
   closeChat,
   setSelectedChatMessages,
+  setAddMessage,
 } = createChatSlice.actions;
 export const userReducer = userSlice.reducer;
 export const chatReducer = createChatSlice.reducer;
