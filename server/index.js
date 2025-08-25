@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import contactRoutes from './routes/contact.routes.js';
 import setUpSocket from './socket.js';
+import messagesRoutes from './routes/messages.routes.js';
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/messages', messagesRoutes)
 
 app.use('/uploads/profiles', express.static("uploads/profiles"));
 

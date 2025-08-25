@@ -33,11 +33,6 @@ const MessageBar = () => {
   };
   const handleSendMessage = async () => {
     if (selectedChatType === "contact") {
-      console.log("sending message:", {
-        sender: userInfo.userId,
-        content: message,
-        receipent: selectedChatData._id,
-      });
       socket.emit("sendMessage", {
         sender: userInfo.userId,
         content: message,

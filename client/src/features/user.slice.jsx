@@ -10,6 +10,8 @@ import {
   REMOVE_PROFILE_IMAGE_ROUTE,
   LOGOUT_ROUTE,
   SEARCH_CONTACTS_ROUTE,
+  MESSAGES_ROUTES,
+  GET_MESSAGES_ROUTE,
 } from "@/utils/constant";
 
 export const userSlice = createSlice({
@@ -31,7 +33,6 @@ export const createChatSlice = createSlice({
     selectedChatType: undefined,
     selectedChatData: undefined,
     selectedChatMessages: [],
-    
   },
 
   reducers: {
@@ -149,6 +150,15 @@ export const userApi = createApi({
       }),
       // invalidatesTags:["UserChange"]
     }),
+
+    getMessages: builder.mutation({
+      query: ({id}) => ({
+        url: GET_MESSAGES_ROUTE,
+        method: "POST",
+        body: {id},
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -161,6 +171,7 @@ export const {
   useRemoveProfileImageMutation,
   useLogOutMutation,
   useSearchContactsMutation,
+  useGetMessagesMutation
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {

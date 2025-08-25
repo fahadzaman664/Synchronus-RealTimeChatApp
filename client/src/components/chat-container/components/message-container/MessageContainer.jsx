@@ -1,12 +1,38 @@
+import {
+  setSelectedChatMessages,
+  useGetMessagesMutation,
+} from "@/features/user.slice";
 import moment from "moment/moment";
 import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const MessageContainer = () => {
   const { selectedChatData, selectedChatType, selectedChatMessages } =
     useSelector((state) => state.chat);
   const userInfo = useSelector((state) => state.user.userInfo);
   const scrollRef = useRef();
+  const [getMessages] = useGetMessagesMutation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getAllMessages = async () => {
+      try {
+        const response = await getMessages({
+          id: selectedChatData._id,
+        }).unwrap();
+        if (response.messages) {
+          dispatch(setSelectedChatMessages(response.messages));
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    if (selectedChatData._id) {
+      if (selectedChatType === "contact") {
+        getAllMessages();
+      }
+    }
+  }, [selectedChatData, selectedChatType]);
 
   useEffect(() => {
     if (scrollRef.current) {
