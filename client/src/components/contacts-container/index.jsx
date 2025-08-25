@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewDm from "./components/new-dm";
 import ProfileInfo from "./components/profile-info/ProfileInfo";
+import { useGetContactsForDMQuery } from "@/features/user.slice";
 
 const ContactsContainer = () => {
+  const { data, error, isLoading, refetch } = useGetContactsForDMQuery();
+
+  
+  useEffect(() => {
+    const fetchContacts = async () => {
+      const res = await refetch(); // refetch returns a promise with 'data'
+      if (res?.data?.contacts) {
+        console.log(res.data.contacts);
+      }
+    };
+    fetchContacts();
+  }, []);
+
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[20-vw] bg-[#343541]   border-r-2 border-[#2f303b] w-full">
       <div className="pt-3">

@@ -12,6 +12,7 @@ import {
   SEARCH_CONTACTS_ROUTE,
   MESSAGES_ROUTES,
   GET_MESSAGES_ROUTE,
+  GET_CONTACTS_FOR_DM,
 } from "@/utils/constant";
 
 export const userSlice = createSlice({
@@ -33,9 +34,13 @@ export const createChatSlice = createSlice({
     selectedChatType: undefined,
     selectedChatData: undefined,
     selectedChatMessages: [],
+    directMessagesContact:[]
   },
 
   reducers: {
+    setDirectMessagesContact:()=>{
+     state.directMessagesContact = action.payload;
+    },
     setSelectedChatType: (state, action) => {
       state.selectedChatType = action.payload;
     },
@@ -152,10 +157,18 @@ export const userApi = createApi({
     }),
 
     getMessages: builder.mutation({
-      query: ({id}) => ({
+      query: ({ id }) => ({
         url: GET_MESSAGES_ROUTE,
         method: "POST",
-        body: {id},
+        body: { id },
+        credentials: "include",
+      }),
+    }),
+
+    getContactsForDM: builder.query({
+      query: () => ({
+        url: GET_CONTACTS_FOR_DM,
+        method: "GET",
         credentials: "include",
       }),
     }),
@@ -171,7 +184,8 @@ export const {
   useRemoveProfileImageMutation,
   useLogOutMutation,
   useSearchContactsMutation,
-  useGetMessagesMutation
+  useGetMessagesMutation,
+  useGetContactsForDMQuery,
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {
@@ -180,6 +194,7 @@ export const {
   closeChat,
   setSelectedChatMessages,
   setAddMessage,
+  setDirectMessagesContact
 } = createChatSlice.actions;
 export const userReducer = userSlice.reducer;
 export const chatReducer = createChatSlice.reducer;
