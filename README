@@ -1,0 +1,59 @@
+📱 WhatsApp Clone – Synchronus-RealTimeChatApp
+A full-stack real-time chat application built with the MERN stack and Socket.io, designed to replicate core features of WhatsApp including instant messaging, contact list, and session-based authentication.
+
+🚀 Features
+
+🔐 Authentication & Security – Secure login/signup with JWT & cookie-based session management
+
+💬 Real-time Messaging – Built with Socket.io for instant delivery of messages
+
+📇 Contact Management – Dynamic contacts list with recent chats and last messages
+
+🗄️ Efficient Data Handling – Used MongoDB aggregation pipelines for optimized queries
+
+🎨 Modern UI – Built with Tailwind CSS + Shadcn/UI for responsive and clean design
+
+🔔 Enhanced UX – Added Lucide-React icons, Lottie animations, and human-readable timestamps with Moment.js
+
+⚡ State Management – API caching and data fetching with RTK Query
+
+
+🛠️ Tech Stack
+
+Frontend:
+React.js
+Tailwind CSS
+Shadcn/UI
+Lucide-React
+Lottie Animations
+RTK Query
+
+Backend:
+Node.js
+Express.js
+Socket.io
+JWT Authentication
+
+Database:
+MongoDB (with Aggregation Pipelines)
+
+
+⚙️ Installation & Setup
+
+
+🔹 Backend Setup
+cd server
+npm install
+nodemon server.js
+
+🔹 Frontend Setup
+cd client
+npm install
+npm run dev
+
+
+🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+Feel free to open an issue or submit a pull request.
+
