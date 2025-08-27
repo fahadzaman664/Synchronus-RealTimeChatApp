@@ -38,7 +38,7 @@ export const createChatSlice = createSlice({
   },
 
   reducers: {
-    setDirectMessagesContact:()=>{
+    setDirectMessagesContact:(state,action)=>{
      state.directMessagesContact = action.payload;
     },
     setSelectedChatType: (state, action) => {

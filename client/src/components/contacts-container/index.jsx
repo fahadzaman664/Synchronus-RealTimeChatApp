@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import NewDm from "./components/new-dm";
 import ProfileInfo from "./components/profile-info/ProfileInfo";
-import { useGetContactsForDMQuery } from "@/features/user.slice";
+import {setDirectMessagesContact, useGetContactsForDMQuery } from "@/features/user.slice";
+import { useDispatch, useSelector } from "react-redux";
+import ContactList from "../ContactList";
 
 const ContactsContainer = () => {
+  const dispatch = useDispatch();
+  const {directMessagesContact}= useSelector((state)=>state.chat)
   const { data, error, isLoading, refetch } = useGetContactsForDMQuery();
 
-  
   useEffect(() => {
     const fetchContacts = async () => {
-      const res = await refetch(); // refetch returns a promise with 'data'
+      const res = await refetch(); 
       if (res?.data?.contacts) {
         console.log(res.data.contacts);
+        dispatch(setDirectMessagesContact(res.data.contacts));
       }
     };
     fetchContacts();
@@ -29,6 +33,9 @@ const ContactsContainer = () => {
             <NewDm />
           </div>
         </div>
+           <div className="max-h-[38vh] overflow-auto scrollbar-hidden">
+            <ContactList contacts = {directMessagesContact} />
+          </div>
       </div>
       <div className="my-5">
         <div className="flex items-center justify-between pr-10">
