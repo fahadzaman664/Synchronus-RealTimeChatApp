@@ -13,6 +13,7 @@ import {
   MESSAGES_ROUTES,
   GET_MESSAGES_ROUTE,
   GET_CONTACTS_FOR_DM,
+  UPLOAD_FILE_ROUTE,
 } from "@/utils/constant";
 
 export const userSlice = createSlice({
@@ -34,12 +35,12 @@ export const createChatSlice = createSlice({
     selectedChatType: undefined,
     selectedChatData: undefined,
     selectedChatMessages: [],
-    directMessagesContact:[]
+    directMessagesContact: [],
   },
 
   reducers: {
-    setDirectMessagesContact:(state,action)=>{
-     state.directMessagesContact = action.payload;
+    setDirectMessagesContact: (state, action) => {
+      state.directMessagesContact = action.payload;
     },
     setSelectedChatType: (state, action) => {
       state.selectedChatType = action.payload;
@@ -172,6 +173,27 @@ export const userApi = createApi({
         credentials: "include",
       }),
     }),
+
+    uploadFile: builder.mutation({
+      query: (formData) => ({
+        url: UPLOAD_FILE_ROUTE,
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      }),
+      //providesTags: ["UserChange"],
+    }),
+
+    fetchFile: builder.query({
+      query: (url) => ({
+        url,
+        method: "GET",
+        responseHandler: async (response) =>
+          URL.createObjectURL(await response.blob()),
+        cache: "no-cache",
+      }),
+      //responseHandler: (response) => response.blob(),
+    }),
   }),
 });
 
@@ -186,6 +208,8 @@ export const {
   useSearchContactsMutation,
   useGetMessagesMutation,
   useGetContactsForDMQuery,
+  useUploadFileMutation,
+  useLazyFetchFileQuery,
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {
@@ -194,7 +218,7 @@ export const {
   closeChat,
   setSelectedChatMessages,
   setAddMessage,
-  setDirectMessagesContact
+  setDirectMessagesContact,
 } = createChatSlice.actions;
 export const userReducer = userSlice.reducer;
 export const chatReducer = createChatSlice.reducer;

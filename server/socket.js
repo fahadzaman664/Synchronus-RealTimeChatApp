@@ -25,27 +25,32 @@ const setUpSocket = (server) => {
     // this if for fetching of userid and socketid from usercoketmap when user send message from front end , so the sender is recepient is comming from front end
     const sendMessage = async (message) => {
         console.log("sendMessage received:", message);
+        try {
+            const senderSocketId = userSocketMap.get(message.sender);
+            const receipentSocketId = userSocketMap.get(message.receipent);
 
-        const senderSocketId = userSocketMap.get(message.sender);
-        const receipentSocketId = userSocketMap.get(message.receipent);
-
-        console.log("Sender ID:", message.sender, "=> Socket:", senderSocketId);
-        console.log("Recipient ID:", message.receipent, "=> Socket:", receipentSocketId);
-        const createMessage = await Message.create(message);
-
-        const messageData = await Message.findById(createMessage._id).populate("sender", "id email firstname lastname image color").populate("receipent", "id email firstname lastname image color");;
+            console.log("Sender ID:", message.sender, "=> Socket:", senderSocketId);
+            console.log("Recipient ID:", message.receipent, "=> Socket:", receipentSocketId);
+            const createMessage = await Message.create(message);
+            console.log("Message saved to DB:", createMessage);
+            const messageData = await Message.findById(createMessage._id).populate("sender", "id email firstname lastname image color").populate("receipent", "id email firstname lastname image color");;
 
 
-        // Send to recipient (if online)
-        if (receipentSocketId) {
-            console.log("recpientid", receipentSocketId)
-            io.to(receipentSocketId).emit("receiveMessage", messageData);
+            // Send to recipient (if online)
+            if (receipentSocketId) {
+                console.log("recpientid", receipentSocketId)
+                io.to(receipentSocketId).emit("receiveMessage", messageData);
+            }
+
+            // Send to sender (to update their own chat UI instantly)
+            if (senderSocketId) {
+                io.to(senderSocketId).emit("receiveMessage", messageData);
+            }
+        } catch (error) {
+            console.error("Error saving message:", error);
+
         }
 
-        // Send to sender (to update their own chat UI instantly)
-        if (senderSocketId) {
-            io.to(senderSocketId).emit("receiveMessage", messageData);
-        }
 
 
     }

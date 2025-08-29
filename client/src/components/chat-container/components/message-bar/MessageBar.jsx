@@ -1,4 +1,5 @@
 import { useSocket } from "@/context/SocketContext";
+import { useUploadFileMutation } from "@/features/user.slice";
 import EmojiPicker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
@@ -8,6 +9,7 @@ import { useSelector } from "react-redux";
 
 const MessageBar = () => {
   const socket = useSocket();
+  const inputFileRef = useRef();
   const [message, setMessage] = useState("");
   const emojiRef = useRef();
   const [emojiPickerOpen, SetEmojiPickerOpen] = useState(false);
@@ -15,6 +17,7 @@ const MessageBar = () => {
     (state) => state.chat
   );
   const { userInfo } = useSelector((state) => state.user);
+  const [uploadFile] = useUploadFileMutation();
 
   useEffect(() => {
     const handleClickOutSide = (event) => {
@@ -42,6 +45,37 @@ const MessageBar = () => {
       });
     }
   };
+
+  const handleAttachmentClick = () => {
+    if (inputFileRef.current) {
+      inputFileRef.current.click();
+    }
+  };
+
+  const handleAttachmentChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await uploadFile(formData);
+        if (response.data && response.data.filePath) {
+          console.log("ok")
+          if (selectedChatType === "contact") {
+            socket.emit("sendMessage", {
+              sender: userInfo.userId,
+              content: undefined,
+              receipent: selectedChatData._id,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="h-[10vh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6">
       <div className="flex-1 flex bg-[#2a2b33] rounded-md items-center gap-5 pr-5">
@@ -52,9 +86,18 @@ const MessageBar = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button className="text-neutral-500 focus:border-none focus:outline-none focus:text-white duration-300 transition-all cursor-pointer">
+        <button
+          className="text-neutral-500 focus:border-none focus:outline-none focus:text-white duration-300 transition-all cursor-pointer"
+          onClick={handleAttachmentClick}
+        >
           <GrAttachment className="text-2xl" />
         </button>
+        <input
+          type="file"
+          className="hidden"
+          ref={inputFileRef}
+          onChange={handleAttachmentChange}
+        />
         <div className="relative">
           <button
             className="text-neutral-500 focus:border-none focus:outline-none focus:text-white duration-300 transition-all cursor-pointer"
