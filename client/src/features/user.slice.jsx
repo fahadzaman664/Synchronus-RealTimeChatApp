@@ -15,7 +15,6 @@ import {
   GET_CONTACTS_FOR_DM,
   UPLOAD_FILE_ROUTE,
 } from "@/utils/constant";
-
 export const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -36,9 +35,25 @@ export const createChatSlice = createSlice({
     selectedChatData: undefined,
     selectedChatMessages: [],
     directMessagesContact: [],
+    isUploading:false,
+    isDownloading:false,
+    fileUploadProgress:0,
+    fileDownloadProgress:0
   },
 
   reducers: {
+    setIsUploading:(state, action)=>{
+       state.isUploading = action.payload;
+    },
+     setIsDownloading:(state, action)=>{
+       state.isDownloading = action.payload;
+    },
+     setFileUploadProgress:(state, action)=>{
+       state.fileUploadProgress= action.payload;
+    },
+     setFileDownloadProgress:(state, action)=>{
+       state.fileDownloadProgress = action.payload;
+    },
     setDirectMessagesContact: (state, action) => {
       state.directMessagesContact = action.payload;
     },
@@ -197,6 +212,8 @@ export const userApi = createApi({
   }),
 });
 
+
+
 export const {
   useUserSignUpMutation,
   useUserLoginMutation,
@@ -219,6 +236,10 @@ export const {
   setSelectedChatMessages,
   setAddMessage,
   setDirectMessagesContact,
+  setFileDownloadProgress,
+  setFileUploadProgress,
+  setIsDownloading,
+  setIsUploading
 } = createChatSlice.actions;
 export const userReducer = userSlice.reducer;
 export const chatReducer = createChatSlice.reducer;

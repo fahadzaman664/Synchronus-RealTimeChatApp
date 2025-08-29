@@ -1,11 +1,16 @@
 import { useSocket } from "@/context/SocketContext";
-import { useUploadFileMutation } from "@/features/user.slice";
+import {
+  setFileUploadProgress,
+  setIsUploading,
+  useUploadFileMutation,
+} from "@/features/user.slice";
 import EmojiPicker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
 import { IoSend } from "react-icons/io5";
 import { RiEmojiStickerLine } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { uploadFileApi } from "@/components/api/uploadFileApi";
 
 const MessageBar = () => {
   const socket = useSocket();
@@ -18,7 +23,7 @@ const MessageBar = () => {
   );
   const { userInfo } = useSelector((state) => state.user);
   const [uploadFile] = useUploadFileMutation();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const handleClickOutSide = (event) => {
       if (emojiRef.current && !emojiRef.current.contains(event.target)) {
@@ -58,8 +63,15 @@ const MessageBar = () => {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
-        const response = await uploadFile(formData);
-        if (response.data && response.data.filePath) {
+        dispatch(setIsUploading(true));
+        const response = await uploadFileApi(formData, (progressEvent) => {
+          dispatch(setFileUploadProgress ( Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          )));
+        });
+
+        if (response && response.filePath) {
+          dispatch(setIsUploading(false));
           console.log("ok")
           if (selectedChatType === "contact") {
             socket.emit("sendMessage", {
@@ -67,12 +79,13 @@ const MessageBar = () => {
               content: undefined,
               receipent: selectedChatData._id,
               messageType: "file",
-              fileUrl: response.data.filePath,
+              fileUrl: response.filePath,
             });
           }
         }
       }
     } catch (error) {
+      setIsUploading(false);
       console.log(error);
     }
   };
