@@ -189,26 +189,26 @@ export const userApi = createApi({
       }),
     }),
 
-    uploadFile: builder.mutation({
-      query: (formData) => ({
-        url: UPLOAD_FILE_ROUTE,
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      }),
-      //providesTags: ["UserChange"],
-    }),
+    // uploadFile: builder.mutation({
+    //   query: (formData) => ({
+    //     url: UPLOAD_FILE_ROUTE,
+    //     method: "POST",
+    //     body: formData,
+    //     credentials: "include",
+    //   }),
+    //   //providesTags: ["UserChange"],
+    // }),
 
-    fetchFile: builder.query({
-      query: (url) => ({
-        url,
-        method: "GET",
-        responseHandler: async (response) =>
-          URL.createObjectURL(await response.blob()),
-        cache: "no-cache",
-      }),
+    // fetchFile: builder.query({
+    //   query: (url) => ({
+    //     url,
+    //     method: "GET",
+    //     responseHandler: async (response) =>
+    //       URL.createObjectURL(await response.blob()),
+    //     cache: "no-cache",
+    //   }),
       //responseHandler: (response) => response.blob(),
-    }),
+   // }),
   }),
 });
 
@@ -225,8 +225,6 @@ export const {
   useSearchContactsMutation,
   useGetMessagesMutation,
   useGetContactsForDMQuery,
-  useUploadFileMutation,
-  useLazyFetchFileQuery,
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {

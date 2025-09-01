@@ -1,9 +1,5 @@
 import { useSocket } from "@/context/SocketContext";
-import {
-  setFileUploadProgress,
-  setIsUploading,
-  useUploadFileMutation,
-} from "@/features/user.slice";
+import { setFileUploadProgress, setIsUploading } from "@/features/user.slice";
 import EmojiPicker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
@@ -22,7 +18,7 @@ const MessageBar = () => {
     (state) => state.chat
   );
   const { userInfo } = useSelector((state) => state.user);
-  const [uploadFile] = useUploadFileMutation();
+  //const [uploadFile] = useUploadFileMutation();
   const dispatch = useDispatch();
   useEffect(() => {
     const handleClickOutSide = (event) => {
@@ -65,14 +61,15 @@ const MessageBar = () => {
         formData.append("file", file);
         dispatch(setIsUploading(true));
         const response = await uploadFileApi(formData, (progressEvent) => {
-          dispatch(setFileUploadProgress ( Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          )));
+          const { loaded, total } = progressEvent;
+          if (total) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            dispatch(setFileUploadProgress(percentCompleted));
+          }
         });
 
         if (response && response.filePath) {
           dispatch(setIsUploading(false));
-          console.log("ok")
           if (selectedChatType === "contact") {
             socket.emit("sendMessage", {
               sender: userInfo.userId,

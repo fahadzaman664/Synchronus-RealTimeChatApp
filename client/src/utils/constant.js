@@ -10,7 +10,7 @@ export const UPDATE_PROFILE_ROUTE = `${AUTH_ROUTES}/update-profile`
 export const ADD_PROFILE_IMAGE_ROUTE = `${AUTH_ROUTES}/add-profile-image`
 export const REMOVE_PROFILE_IMAGE_ROUTE = `${AUTH_ROUTES}/remove-profile-image`
 export const LOGOUT_ROUTE = `${AUTH_ROUTES}/logout`
-
+export const GET_ALL_CONTACT_ROUTE=`${CONTACTS_ROUTES}/get-all-contacts`
 export const SEARCH_CONTACTS_ROUTE = `${CONTACTS_ROUTES}/search`
 export const GET_CONTACTS_FOR_DM = `${CONTACTS_ROUTES}/get-contacts-for-dm`
 export const GET_MESSAGES_ROUTE = `${MESSAGES_ROUTES}/get-messages`

@@ -1,7 +1,8 @@
 import {
+  setFileDownloadProgress,
+  setIsDownloading,
   setSelectedChatMessages,
   useGetMessagesMutation,
-  useLazyFetchFileQuery,
 } from "@/features/user.slice";
 import { HOST } from "@/utils/constant";
 import moment from "moment/moment";
@@ -10,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MdFolderZip } from "react-icons/md";
 import { IoMdArrowRoundDown } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
+import { fetchFileApi } from "@/components/api/uploadFileApi";
 
 const MessageContainer = () => {
   const { selectedChatData, selectedChatType, selectedChatMessages } =
@@ -19,7 +21,7 @@ const MessageContainer = () => {
   const [getMessages] = useGetMessagesMutation();
   const dispatch = useDispatch();
   const [chatJustSelected, setChatJustSelected] = useState(false);
-  const [fetchFile] = useLazyFetchFileQuery();
+  //const [fetchFile] = useLazyFetchFileQuery();
   const [showImage, setShowImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   useEffect(() => {
@@ -69,14 +71,31 @@ const MessageContainer = () => {
     return imageRegex.test(filePath);
   };
   const downloadFile = async (url) => {
-    const urlBlob = await fetchFile(url).unwrap();
+    try {
+      
+   dispatch(setIsDownloading(true));
+    dispatch(setFileDownloadProgress(0));
+    const response = await fetchFileApi(url, (progressEvent) => {
+      const { loaded, total } = progressEvent;
+       if (total) {
+        const percentCompleted = Math.round((loaded * 100) / total);
+        dispatch(setFileDownloadProgress(percentCompleted));
+      }
+    });
+    const blobUrl = URL.createObjectURL(new Blob([response.data]));
+
     const link = document.createElement("a");
-    link.href = urlBlob;
+    link.href = blobUrl;
     link.setAttribute("download", url.split("/").pop());
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.URL.revokeObjectURL(urlBlob);
+    window.URL.revokeObjectURL(blobUrl);
+    dispatch(setIsDownloading(false));
+    }catch (error) {
+    console.error("Download failed", error);
+  } 
+    
   };
 
   const renderMessages = () => {
@@ -178,16 +197,15 @@ const MessageContainer = () => {
             >
               <IoMdArrowRoundDown />
             </button>
-             <button
-           className="bg-black/20 text-2xl p-3 rounded-full hover:bg-black/50 cursor-pointer transition-all duration-300"
-           onClick={()=>{
-            setShowImage(false);
-            setImageUrl(null);
-           }}
-           >
-            <IoCloseSharp />
-
-           </button>
+            <button
+              className="bg-black/20 text-2xl p-3 rounded-full hover:bg-black/50 cursor-pointer transition-all duration-300"
+              onClick={() => {
+                setShowImage(false);
+                setImageUrl(null);
+              }}
+            >
+              <IoCloseSharp />
+            </button>
           </div>
         </div>
       )}

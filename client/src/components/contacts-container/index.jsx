@@ -4,6 +4,7 @@ import ProfileInfo from "./components/profile-info/ProfileInfo";
 import {setDirectMessagesContact, useGetContactsForDMQuery } from "@/features/user.slice";
 import { useDispatch, useSelector } from "react-redux";
 import ContactList from "../ContactList";
+import CreateChannel from "./components/create-channel/CreateChannel";
 
 const ContactsContainer = () => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const ContactsContainer = () => {
       <div className="my-5">
         <div className="flex items-center justify-between pr-10">
           <Title text="Channels" />
+          <CreateChannel />
         </div>
       </div>
       <ProfileInfo />

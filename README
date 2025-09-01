@@ -15,7 +15,7 @@ A full-stack real-time chat application built with the MERN stack and Socket.io,
 
 🔔 Enhanced UX – Added Lucide-React icons, Lottie animations, and human-readable timestamps with Moment.js
 
-⚡ State Management – API caching and data fetching with RTK Query
+⚡ State Management – API caching and data fetching with RTK Query/Axios for UploadFile,DowndloadFile, ContextApi for SocketIo
 
 
 🛠️ Tech Stack
@@ -23,10 +23,12 @@ A full-stack real-time chat application built with the MERN stack and Socket.io,
 Frontend:
 React.js
 Tailwind CSS
-Shadcn/UI
+Shadcn/UI / Shadcn/expansion
 Lucide-React
 Lottie Animations
-RTK Query
+Redux 
+contextApi
+Axios
 
 Backend:
 Node.js

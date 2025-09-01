@@ -96,4 +96,23 @@ export const getContactForDmList = async (req, res) => {
         });
     }
 }
+// for channel
+export const getAllContacts = async (req, res) => {
+    try {
+        //get all users which is not equal to current login user
+        const users = await User.find({ _id: { $ne: req.userId } }, "firstname lastname _id email");
+        const contacts = users.map((user) => ({
+        label: user.firstname ? `${user.firstname} ${user.lastname}` : `${user.email}`
+        }));
 
+        return res.status(200).json({ contacts });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+
+}
