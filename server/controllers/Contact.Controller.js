@@ -102,7 +102,8 @@ export const getAllContacts = async (req, res) => {
         //get all users which is not equal to current login user
         const users = await User.find({ _id: { $ne: req.userId } }, "firstname lastname _id email");
         const contacts = users.map((user) => ({
-        label: user.firstname ? `${user.firstname} ${user.lastname}` : `${user.email}`
+        label: user.firstname ? `${user.firstname} ${user.lastname}` : `${user.email}`,
+        value:user._id
         }));
 
         return res.status(200).json({ contacts });

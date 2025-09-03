@@ -10,11 +10,13 @@ import {
   REMOVE_PROFILE_IMAGE_ROUTE,
   LOGOUT_ROUTE,
   SEARCH_CONTACTS_ROUTE,
-  MESSAGES_ROUTES,
   GET_MESSAGES_ROUTE,
   GET_CONTACTS_FOR_DM,
-  UPLOAD_FILE_ROUTE,
+  GET_ALL_CONTACT_ROUTE,
+  CREATE_CHANNEL,
+  GET_USER_CHANNELS_ROUTES,
 } from "@/utils/constant";
+import { act } from "react";
 export const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -32,27 +34,34 @@ export const createChatSlice = createSlice({
   name: "chat",
   initialState: {
     selectedChatType: undefined,
-    selectedChatData: undefined,
+    selectedChatData: {},
     selectedChatMessages: [],
     directMessagesContact: [],
-    isUploading:false,
-    isDownloading:false,
-    fileUploadProgress:0,
-    fileDownloadProgress:0
+    channels: [],
+    isUploading: false,
+    isDownloading: false,
+    fileUploadProgress: 0,
+    fileDownloadProgress: 0,
   },
 
   reducers: {
-    setIsUploading:(state, action)=>{
-       state.isUploading = action.payload;
+    setChannels: (state, action) => {
+      state.channels = action.payload;
     },
-     setIsDownloading:(state, action)=>{
-       state.isDownloading = action.payload;
+    addChannel: (state, action) => {
+      state.channels = [...state.channels, action.payload];
     },
-     setFileUploadProgress:(state, action)=>{
-       state.fileUploadProgress= action.payload;
+    setIsUploading: (state, action) => {
+      state.isUploading = action.payload;
     },
-     setFileDownloadProgress:(state, action)=>{
-       state.fileDownloadProgress = action.payload;
+    setIsDownloading: (state, action) => {
+      state.isDownloading = action.payload;
+    },
+    setFileUploadProgress: (state, action) => {
+      state.fileUploadProgress = action.payload;
+    },
+    setFileDownloadProgress: (state, action) => {
+      state.fileDownloadProgress = action.payload;
     },
     setDirectMessagesContact: (state, action) => {
       state.directMessagesContact = action.payload;
@@ -188,6 +197,29 @@ export const userApi = createApi({
         credentials: "include",
       }),
     }),
+    getAllContacts: builder.query({
+      query: () => ({
+        url: GET_ALL_CONTACT_ROUTE,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+    createNewChannel: builder.mutation({
+      query: ({name,members}) => ({
+        url: CREATE_CHANNEL,
+        method: "POST",
+        body:{name, members},
+        credentials: "include",
+      }),
+    }),
+     getUserChannels: builder.query({
+      query: () => ({
+        url: GET_USER_CHANNELS_ROUTES,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+    
 
     // uploadFile: builder.mutation({
     //   query: (formData) => ({
@@ -207,12 +239,10 @@ export const userApi = createApi({
     //       URL.createObjectURL(await response.blob()),
     //     cache: "no-cache",
     //   }),
-      //responseHandler: (response) => response.blob(),
-   // }),
+    //responseHandler: (response) => response.blob(),
+    // }),
   }),
 });
-
-
 
 export const {
   useUserSignUpMutation,
@@ -225,6 +255,10 @@ export const {
   useSearchContactsMutation,
   useGetMessagesMutation,
   useGetContactsForDMQuery,
+  useLazyGetAllContactsQuery,
+  useCreateNewChannelMutation,
+  useLazyGetUserChannelsQuery
+
 } = userApi;
 export const { setUserInfo } = userSlice.actions;
 export const {
@@ -237,7 +271,9 @@ export const {
   setFileDownloadProgress,
   setFileUploadProgress,
   setIsDownloading,
-  setIsUploading
+  setIsUploading,
+  addChannel,
+  setChannels
 } = createChatSlice.actions;
 export const userReducer = userSlice.reducer;
 export const chatReducer = createChatSlice.reducer;

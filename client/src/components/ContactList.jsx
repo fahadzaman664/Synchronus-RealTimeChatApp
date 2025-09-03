@@ -18,8 +18,9 @@ const ContactList = ({ contacts, isChannel = false }) => {
       dispatch(setSelectedChatType("channel"));
     } else {
       dispatch(setSelectedChatType("contact"));
-      dispatch(setSelectedChatData(contact));
     }
+          dispatch(setSelectedChatData(contact));
+
     if (selectedChatData && selectedChatData._id !== contact._id) {
       dispatch(setSelectedChatMessages([]));
     }

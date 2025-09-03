@@ -1,26 +1,41 @@
 import { useEffect, useState } from "react";
 import NewDm from "./components/new-dm";
 import ProfileInfo from "./components/profile-info/ProfileInfo";
-import {setDirectMessagesContact, useGetContactsForDMQuery } from "@/features/user.slice";
+import {
+  setChannels,
+  setDirectMessagesContact,
+  useGetContactsForDMQuery,
+  useLazyGetUserChannelsQuery,
+} from "@/features/user.slice";
 import { useDispatch, useSelector } from "react-redux";
 import ContactList from "../ContactList";
 import CreateChannel from "./components/create-channel/CreateChannel";
 
 const ContactsContainer = () => {
   const dispatch = useDispatch();
-  const {directMessagesContact}= useSelector((state)=>state.chat)
+  const { directMessagesContact, channels } = useSelector(
+    (state) => state.chat
+  );
   const { data, error, isLoading, refetch } = useGetContactsForDMQuery();
+  const [trigger] = useLazyGetUserChannelsQuery();
 
   useEffect(() => {
     const fetchContacts = async () => {
-      const res = await refetch(); 
+      const res = await refetch();
       if (res?.data?.contacts) {
-        console.log(res.data.contacts);
         dispatch(setDirectMessagesContact(res.data.contacts));
       }
     };
+
+    const getChannels = async () => {
+      const response = await trigger().unwrap();
+      if (response.success && response.channels) {
+        dispatch(setChannels(response.channels));
+      }
+    };
     fetchContacts();
-  }, []);
+    getChannels();
+  }, [setChannels, setDirectMessagesContact]);
 
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[20-vw] bg-[#343541]   border-r-2 border-[#2f303b] w-full">
@@ -34,14 +49,17 @@ const ContactsContainer = () => {
             <NewDm />
           </div>
         </div>
-           <div className="max-h-[38vh] overflow-auto scrollbar-hidden">
-            <ContactList contacts = {directMessagesContact} />
-          </div>
+        <div className="max-h-[38vh] overflow-auto scrollbar-hidden">
+          <ContactList contacts={directMessagesContact} />
+        </div>
       </div>
       <div className="my-5">
         <div className="flex items-center justify-between pr-10">
           <Title text="Channels" />
           <CreateChannel />
+        </div>
+        <div className="max-h-[38vh] overflow-auto scrollbar-hidden">
+          <ContactList contacts={channels} isChannel={true} />
         </div>
       </div>
       <ProfileInfo />
