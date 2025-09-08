@@ -1,5 +1,6 @@
 import { Server as SocketIOServer } from "socket.io";
 import Message from "./Models/MessagesModel.js";
+import Channel from "./Models/ChannelModel.js"
 const setUpSocket = (server) => {
     const io = new SocketIOServer(server, {
         cors: {
@@ -48,11 +49,42 @@ const setUpSocket = (server) => {
             }
         } catch (error) {
             console.error("Error saving message:", error);
-
         }
+    }
 
+    const sendChannelMessage = async (message) =>{
+       const {channelId,sender,content,messageType, fileUrl} = message
+       const createMessage = await Message.create({
+        sender,
+        receipent:null,
+        content,
+        messageType,
+        timeStamp:new Date(),
+        fileUrl,
+       })
 
+       const messageData = await Message.findById(createMessage._id).populate("sender", "id email firstname lastname image color").exec();
 
+       await Channel.findByIdAndUpdate(channelId,{
+        $push:{messages:createMessage._id}
+       });
+       
+       const channel = await Channel.findById(channelId).populate("members");
+
+       const finalData =  {...messageData._doc, channelId:channel._id}
+
+       if(channel && channel.members){
+        channel.members.forEach((member)=>{
+            const memberSocketId = userSocketMap.get(member._id.toString());
+            if(memberSocketId){
+                io.to(memberSocketId).emit("recieve-channel-message", finalData);
+            }      
+        });
+         const adminSocketId = userSocketMap.get(channel.admin._id.toString());
+             if(adminSocketId){
+                io.to(adminSocketId).emit("recieve-channel-message", finalData);
+            }
+       }
     }
 
 
@@ -68,6 +100,7 @@ const setUpSocket = (server) => {
             console.log("user id is not provided during connection...")
         }
         socket.on("sendMessage", sendMessage);
+        socket.on("send-channel-message", sendChannelMessage)
         socket.on("disconnect", () => disconnect(socket));
     })
 }

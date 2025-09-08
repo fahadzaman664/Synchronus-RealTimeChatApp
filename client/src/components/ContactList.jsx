@@ -19,7 +19,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
     } else {
       dispatch(setSelectedChatType("contact"));
     }
-          dispatch(setSelectedChatData(contact));
+    dispatch(setSelectedChatData(contact));
 
     if (selectedChatData && selectedChatData._id !== contact._id) {
       dispatch(setSelectedChatMessages([]));
@@ -49,11 +49,15 @@ const ContactList = ({ contacts, isChannel = false }) => {
                 ) : (
                   <div
                     className={`
-                        ${selectedChatData && selectedChatData._id === contact._id ? "bg-[ffffff22] border border-white/70" : getColour(
-                      contact?.color)}
+                        ${
+                          selectedChatData &&
+                          selectedChatData._id === contact._id
+                            ? "bg-[ffffff22] border border-white/70"
+                            : getColour(contact?.color)
+                        }
                         uppercase w-10 h-10 text-lg border-[1px] flex items-center justify-center rounded-full ${getColour(
-                      contact?.color || ""
-                    )}`}
+                          contact?.color || ""
+                        )}`}
                   >
                     {contact.firstname && contact.lastname
                       ? contact.firstname.split("").shift()

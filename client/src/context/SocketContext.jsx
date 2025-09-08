@@ -50,8 +50,19 @@ export const SocketProvider = ({ children }) => {
         dispatch(setAddMessage(message));
       }
     };
-
+     const handleReceiveChannelMessage = (message) =>{
+        if (
+        selectedChatType !== undefined &&
+        (selectedChatData?._id === message.senderId ||
+          selectedChatData?._id === message.channelId)
+      ) {
+        console.log(" message received", message);
+        dispatch(setAddMessage(message));
+      }
+    
+     }
     socketRef.current.on("receiveMessage", handleReceiveMessage);
+    socketRef.current.on("recieve-channel-message", handleReceiveChannelMessage);
 
     return () => {
       socketRef.current.off("receiveMessage", handleReceiveMessage);
